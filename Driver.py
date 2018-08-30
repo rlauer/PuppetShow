@@ -9,11 +9,30 @@ def parseReservation(reservation):
     return (int(row), int(seat))
 
 
-# Initialize Chart
+# Use the seating chart to reserve the best seats possible
+# numSeats - the number of seats to book consecutively
+def ReserveBestSeats(numSeats):
+    seats = chart.FindBestSeats(int(numSeats))
+    if seats == -1:
+        print("Not Available")
+    elif len(seats) == 1:
+        seat = seats[0]
+        chart.ReserveSeat(seat[0], seat[1])
+        print(f"R{seat[0]}C{seat[1]}")
+    else:
+        for seat in seats:
+            chart.ReserveSeat(seat[0], seat[1])
+        seats.sort(key=lambda s: s[1])  # order by seat
+        rowNumber = seats[0][0]
+        print(
+            f"R{rowNumber}C{seats[0][1]} - R{rowNumber}C{seats[len(seats) - 1][1]}")
+
+
+# Initialize chart
 chart = SeatingChart(CHART_ROWS, CHART_SEATS)
 
 
-# Initial Reservations
+# Individual reservations
 reservationInput = input()
 
 reservations = []
@@ -22,23 +41,11 @@ for reservation in reservationInput.split(' '):
     chart.ReserveSeat(row, seat)
 
 
-# Find Best Seats
+# Find best seats for a group
 while True:
     numSeats = input()
     if numSeats:
-        seats = chart.FindBestSeats(int(numSeats))
-        if seats == -1:
-            print("Not Available")
-        elif len(seats) == 1:
-            seat = seats[0]
-            chart.ReserveSeat(seat[0], seat[1])
-            print(f"R{seat[0]}C{seat[1]}")
-        else:
-            for seat in seats:
-                chart.ReserveSeat(seat[0], seat[1])
-            seats.sort(key = lambda s: s[1]) # order by seat
-            rowNumber = seats[0][0]
-            print(f"R{rowNumber}C{seats[0][1]} - R{rowNumber}C{seats[len(seats) - 1][1]}")
+        ReserveBestSeats(numSeats)
     else:
         print(chart.TotalUnreservedSeats())
         break
